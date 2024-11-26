@@ -71,6 +71,3 @@ def classify_log():
     })
 
     return jsonify({"data": True, "message": "Classification saved successfully."}), 200
-
-if __name__ == "__main__":
-    app.run(debug=True)

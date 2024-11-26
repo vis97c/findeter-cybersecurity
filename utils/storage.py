@@ -1,3 +1,4 @@
+import os
 import json
 
 class StorageManager:
@@ -12,6 +13,8 @@ class StorageManager:
             return []
 
     def _save_data(self, data):
+        os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
+
         with open(self.filepath, "w") as f:
             json.dump(data, f)
 
@@ -28,12 +31,12 @@ class StorageManager:
 # Log al incomming
 class RequestsStorageManager(StorageManager):
     def __init__(self):
-        StorageManager.__init__(self, "../logs/requests_log.json")
+        StorageManager.__init__(self, "logs/requests_log.json")
 
 # Log some requests
 class ClassificationsStorageManager(StorageManager):
     def __init__(self):
-        StorageManager.__init__(self, "../logs/classifications.json")
+        StorageManager.__init__(self, "logs/classifications.json")
 
     def get_unclassified_logs(self):
         classifications = self.get_all()

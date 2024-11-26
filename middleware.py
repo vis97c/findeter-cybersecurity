@@ -16,16 +16,17 @@ class Middleware:
 
     def before_request(self):
         req_data = self.log_request() # Always log current request
-        log_data = request_log_manager.get_all
+        log_data = request_log_manager.get_all()
 
         # Check if is classified already
-        manual_classification = self.classify_request(req_data)
+        manual_classification = self.get_classification(req_data)
 
-        if manual_classification is not None:
-            if manual_classification: return # Already classified as safe
-            else: return {"error": "Request blocked (manually classified as unsafe)"}, 403
+        # Block if marked as unsafe
+        if manual_classification is not None and not manual_classification:
+            return {"error": "Request blocked (manually classified as unsafe)"}, 403
 
-        # Unclassified, use IA
+        # Check with AI
+        # Every request will be checked against AI
         analysis = analyze_request(req_data, log_data)
 
         if analysis["confidence"] < CONFIDENCE_THRESHOLD:
@@ -53,14 +54,18 @@ class Middleware:
             "body": request.get_json(silent=True) or request.form.to_dict()
         }
         
-        return self.log_manager.save(request_log)
+        return request_log_manager.save(request_log)
     
-    def classify_request(req_data):
-        classifications = classification_manager.get_all
+    def get_classification(self, req_data):
+        classifications = classification_manager.get_all()
+
+        # No classifications exists yet
+        if len(classifications) == 0: return None
 
         for classification in classifications:
             if classification["request"] == req_data:
                 return classification["is_safe"]
+        
         return None
 
     
