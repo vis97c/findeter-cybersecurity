@@ -4,7 +4,7 @@
   "description": "Findeter cybersecurity chaallenge",
   "main": "app.py",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "flask --app app run --debug"
   },
   "repository": {
     "type": "git",

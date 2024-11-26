@@ -15,6 +15,8 @@ classification_manager = ClassificationsStorageManager()
 # ROUTES
 @app.route('/')
 def index():
+    if session.get('logged_in'): return redirect('/admin')
+
     return render_template('index.html')
 
 @app.route('/admin')
@@ -52,7 +54,7 @@ def get_unclassified_logs():
     if not session.get('logged_in'): return jsonify({"data": None, "error": "Unauthorized"}), 401
     
     unclassified_logs = classification_manager.get_unclassified_logs()
-
+    
     return jsonify(unclassified_logs), 200
 
 # Classify log

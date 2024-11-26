@@ -1,4 +1,4 @@
-# Findeter Cybersecurity challenge
+# Findeter cybersecurity challenge
 
 Cybersecurity challenge for findeter
 

@@ -1,4 +1,7 @@
+import copy
+
 from flask import request
+from datetime import datetime
 from utils.storage import RequestsStorageManager, ClassificationsStorageManager
 from validator import analyze_request
 
@@ -46,7 +49,7 @@ class Middleware:
     def log_request(self):
         # Log current request
         request_log = {
-            "timestamp": request.headers.get("Date", "Unknown"),
+            "timestamp": datetime.now().isoformat(),
             "path": request.path,
             "method": request.method,
             "headers": dict(request.headers),
@@ -63,8 +66,14 @@ class Middleware:
         if len(classifications) == 0: return None
 
         for classification in classifications:
-            if classification["request"] == req_data:
-                return classification["is_safe"]
+            local_classification = copy.deepcopy(classification["request"])
+            local_req = copy.deepcopy(req_data)
+
+            del local_classification["timestamp"]
+            del local_req["timestamp"]
+
+            if local_classification == local_req:
+                return local_classification["is_safe"]
         
         return None
 

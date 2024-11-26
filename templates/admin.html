@@ -23,24 +23,57 @@
 			onload="this.onload=null;this.rel='stylesheet'"
 			href="https://unpkg.com/@open-xamu-co/ui-styles@^3.0.0-next.29/dist/index.min.css"
 		/>
-		<title>Admin - Findeter Cybersecurity Challenge</title>
+		<title>Admin - Findeter cybersecurity challenge</title>
 		<style>
 			#appex {
 				width: 100%;
 				height: 100%;
 				overflow: hidden;
 			}
+			#appex.is--loading::after {
+				content: "Loading...";
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				background-color: rgba(var(--rgb-light), 0.1);
+			}
 		</style>
 	</head>
 	<body>
-		<main id="appex">
+		<main id="appex" class="--txtColor-dark7">
 			<div id="login" class="view --flx --minHeight-100">
 				<section class="view-item --minHeightVh-100 --bgColor">
 					<div class="holder --flx-center --gap-30">
-						<div class="flx --flxColumn --flx-center --gap-30 --flx --pY">
-							Contenido
+						<div class="flx --flxColumn --flx-center-start --gap-30 --flx --pY">
+							<div class="flx --flxColumn --gap-5">
+								<h4 class="--opacity-05">Findeter cybersecurity challenge</h4>
+								<h1>Admin panel</h1>
+							</div>
+							<table class="tbl --txtSize-sm --width-100">
+								<thead>
+									<tr>
+										<th>Timestamp</th>
+										<th>Path</th>
+										<th>Method</th>
+										<th>IP</th>
+										<th>Body</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody id="contents">
+									<!-- Data will be populated here -->
+									<tr>
+										<td colspan="5">Loading requests...</td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
-						<div class="txt --pY --txtColor-dark7 --txtSize-sm">
+						<div class="txt --pY --txtSize-sm">
 							<p>
 								Develop by
 								<b>Daniel Castillo</b>
@@ -53,4 +86,133 @@
 			</div>
 		</main>
 	</body>
+	<script type="text/javascript" defer>
+		async function classifyRequestAsUnsafe(request, is_safe) {
+			const response = await fetch("/logs/classify", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ request, is_safe }),
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to classify request: " + response.statusText);
+			}
+
+			const data = await response.json();
+
+			if (data.data) {
+				return populateUnclassifiedRequests();
+			}
+
+			throw new Error("Failed to classify request: " + response.statusText);
+		}
+		// Function to display unclassified requests in the table
+		function displayUnclassifiedRequests(requests, tableBody) {
+			const appex = document.getElementById("appex");
+
+			requests.forEach((request) => {
+				const row = document.createElement("tr");
+				const timestampCell = document.createElement("td");
+				const pathCell = document.createElement("td");
+				const methodCell = document.createElement("td");
+				const ipCell = document.createElement("td");
+				const bodyCell = document.createElement("td");
+				const actionCell = document.createElement("td");
+
+				// timestamp
+				timestampCell.textContent = request.timestamp;
+				row.appendChild(timestampCell);
+				// path
+				pathCell.textContent = request.path;
+				row.appendChild(pathCell);
+				// method
+				methodCell.textContent = request.method;
+				row.appendChild(methodCell);
+				// ip
+				ipCell.textContent = request.ip;
+				row.appendChild(ipCell);
+				// body
+				bodyCell.textContent = JSON.stringify(request.body); // Display body as string
+				row.appendChild(bodyCell);
+
+				// action
+				const actionContainer = document.createElement("div");
+				const actionButtonSafe = document.createElement("button");
+				const actionButtonUnsafe = document.createElement("button");
+
+				// set container
+				actionContainer.classList.add("flx", "--flxRow", "--flx-center");
+				// set safe button
+				actionButtonSafe.textContent = "Safe";
+				actionButtonSafe.dataset.tooltip = "Mark request as safe";
+				actionButtonSafe.classList.add("bttn", "--size-sm");
+				actionButtonSafe.addEventListener("click", async () => {
+					try {
+						appex.classList.add("is--loading");
+
+						if (await classifyRequestAsUnsafe(request, true)) {
+							alert("Request classified as safe!");
+						}
+					} catch (err) {
+						console.log("Error classifying request:", err);
+						alert("Couldn't classify request");
+					}
+
+					appex.classList.remove("is--loading");
+				});
+				actionContainer.appendChild(actionButtonSafe);
+				// set unsafe button
+				actionButtonUnsafe.textContent = "Unsafe";
+				actionButtonUnsafe.dataset.tooltip = "Mark request as unsafe";
+				actionButtonUnsafe.classList.add("bttn", "--tm-danger-light", "--size-sm");
+				actionButtonUnsafe.addEventListener("click", async () => {
+					try {
+						appex.classList.add("is--loading");
+
+						if (await classifyRequestAsUnsafe(request, false)) {
+							alert("Request classified as unsafe!");
+						}
+					} catch (err) {
+						console.log("Error classifying request:", err);
+						alert("Couldn't classify request");
+					}
+
+					appex.classList.remove("is--loading");
+				});
+				actionContainer.appendChild(actionButtonUnsafe);
+				// Append container to cell
+				actionCell.appendChild(actionContainer);
+				row.appendChild(actionCell);
+
+				// Append row to table body
+				tableBody.appendChild(row);
+			});
+		}
+
+		async function populateUnclassifiedRequests() {
+			try {
+				const tableBody = document.getElementById("contents");
+				const response = await fetch("/logs/unclassified", {
+					method: "GET",
+					headers: { "Content-Type": "application/json" },
+				});
+
+				const data = await response.json();
+
+				if (data.length === 0) {
+					tableBody.innerHTML = "<tr><td colspan='5'>No unclassified requests</td></tr>";
+				} else {
+					tableBody.innerHTML = ""; // Clear any existing rows
+					displayUnclassifiedRequests(data, tableBody);
+				}
+			} catch (err) {
+				console.error("Error fetching unclassified requests:", err);
+			}
+		}
+
+		// Call the function to fetch and display unclassified requests on page load
+		document.addEventListener("DOMContentLoaded", async () => {
+			populateUnclassifiedRequests();
+		});
+	</script>
 </html>

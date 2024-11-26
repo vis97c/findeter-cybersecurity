@@ -40,13 +40,6 @@ class ClassificationsStorageManager(StorageManager):
 
     def get_unclassified_logs(self):
         classifications = self.get_all()
-        unclassified_requests = {
-            json.dumps(c["request"], sort_keys=True) 
-            for c in classifications if c.get("is_safe") is None
-        }
-    
-        return [
-            log for log in self.get_all()
-            if json.dumps(log, sort_keys=True) in unclassified_requests
-        ]
+
+        return [c["request"] for c in classifications if c["is_safe"] is None]
 

@@ -23,7 +23,7 @@
 			onload="this.onload=null;this.rel='stylesheet'"
 			href="https://unpkg.com/@open-xamu-co/ui-styles@^3.0.0-next.29/dist/index.min.css"
 		/>
-		<title>Home - Findeter Cybersecurity Challenge</title>
+		<title>Home - Findeter cybersecurity challenge</title>
 		<style>
 			#appex {
 				width: 100%;
@@ -33,44 +33,48 @@
 		</style>
 	</head>
 	<body>
-		<main id="appex">
+		<main id="appex" class="--txtColor-dark7">
 			<div id="login" class="view --flx --minHeight-100">
 				<section class="view-item --minHeightVh-100 --bgColor">
 					<div class="holder --flx-center --gap-30">
 						<div class="flx --flxColumn --flx-center --gap-30 --flx --pY">
 							<div class="flx --flxColumn --gap-5">
-								<h4>Findeter</h4>
-								<h1>Cybersecurity Challenge</h1>
+								<h4 class="--opacity-05">Findeter cybersecurity challenge</h4>
+								<h1>Login</h1>
 							</div>
 							<form
+								id="login"
+								action="#"
 								method="post"
 								class="holder --width-480 --maxWidth-100 --minWidth-100 --p-none flx --flxColumn --flx-start-stretch --gap-30"
 							>
 								<div class="flx --flxColumn --flx-start-stretch">
-									<h4 class="--txtColor">Ingresa tus datos:</h4>
+									<h4 class="--txtColor">Fill your data:</h4>
 									<div class="flx --flxColumn --flx-start-stretch --gap-5">
-										<p class="--txtSize-sm">Correo electronico*</p>
+										<p class="--txtSize-sm">User name*</p>
 										<div class="iTxt">
 											<input
-												name="email"
-												type="email"
-												placeholder="Tu cuenta de correo..."
-												title="Correo electronico"
-												autocomplete="email"
+												id="username"
+												name="username"
+												type="text"
+												placeholder="Your user name..."
+												title="User name"
+												autocomplete="off"
 												required
 											/>
 											<i aria-hidden="true" class="fa-at fas icon"></i>
 										</div>
 									</div>
 									<div class="flx --flxColumn --flx-start-stretch --gap-5">
-										<p class="--txtSize-sm">Contraseña*</p>
+										<p class="--txtSize-sm">Password*</p>
 										<div class="iTxt">
 											<input
+												id="password"
 												name="password"
 												type="password"
-												placeholder="Tu contraseña..."
-												title="Contraseña"
-												autocomplete="current-password"
+												placeholder="Your password..."
+												title="Password"
+												autocomplete="off"
 												required
 											/>
 											<i aria-hidden="true" class="fa-lock fas icon"></i>
@@ -79,12 +83,12 @@
 									<div
 										class="flx --flxRow-wrap --flx-center --flx-start-center:md --gap"
 									>
-										<button class="bttn" type="submit">Iniciar sesion</button>
+										<button class="bttn" type="submit">Log in</button>
 									</div>
 								</div>
 							</form>
 						</div>
-						<div class="txt --pY --txtColor-dark7 --txtSize-sm">
+						<div class="txt --pY --txtSize-sm">
 							<p>
 								Develop by
 								<b>Daniel Castillo</b>
@@ -96,5 +100,38 @@
 				</section>
 			</div>
 		</main>
+		<script type="text/javascript">
+			const loginForm = document.getElementById("login");
+
+			loginForm.addEventListener("submit", async (event) => {
+				event.preventDefault();
+
+				const username = document.getElementById("username").value;
+				const password = document.getElementById("password").value;
+
+				if (!username || !password) return alert("Username and password are required");
+
+				try {
+					const response = await fetch("/login", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ username, password }),
+					});
+					const result = await response.json();
+
+					if (result.data) {
+						alert("Login successful");
+						location = "/admin";
+
+						return;
+					}
+
+					alert("Invalid username or password");
+				} catch (err) {
+					console.error("Error:", err);
+					alert(err);
+				}
+			});
+		</script>
 	</body>
 </html>
