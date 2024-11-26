@@ -1,0 +1,30 @@
+{
+  "name": "findeter-cybersecurity",
+  "version": "1.0.0",
+  "description": "Findeter cybersecurity chaallenge",
+  "main": "app.py",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vis97c/findeter-cybersecurity.git"
+  },
+  "keywords": [
+    "Findeter",
+    "cybersecurity",
+    "challenge",
+    "python",
+    "cybersecurity"
+  ],
+  "author": "Daniel Castillo & Victor Saa",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/vis97c/findeter-cybersecurity/issues"
+  },
+  "homepage": "https://github.com/vis97c/findeter-cybersecurity#readme",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "dependencies": {
+    "prettier": "^3.4.1"
+  }
+}

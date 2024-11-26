@@ -1,12 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-</head>
-<body>
-    <h1>Welcome to the Flask App</h1>
-    <a href="/about">About</a>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="preconnect" href="https://fonts.googleapis.com/" crossorigin="anonymous" />
+		<link rel="preconnect" href="https://unpkg.com/" crossorigin="anonymous" />
+		<link
+			rel="preload"
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'"
+			href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap"
+		/>
+		<link
+			rel="preload"
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'"
+			href="https://unpkg.com/@fortawesome/fontawesome-free@^6/css/all.min.css"
+		/>
+		<link
+			rel="preload"
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'"
+			href="https://unpkg.com/@open-xamu-co/ui-styles@^3.0.0-next.29/dist/index.min.css"
+		/>
+		<title>Home - Findeter Cybersecurity Challenge</title>
+		<style>
+			#appex {
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body>
+		<main id="appex">
+			<div id="login" class="view --flx --minHeight-100">
+				<section class="view-item --minHeightVh-100 --bgColor">
+					<div class="holder --flx-center --gap-30">
+						<div class="flx --flxColumn --flx-center --gap-30 --flx --pY">
+							<div class="flx --flxColumn --gap-5">
+								<h4>Findeter</h4>
+								<h1>Cybersecurity Challenge</h1>
+							</div>
+							<form
+								method="post"
+								class="holder --width-480 --maxWidth-100 --minWidth-100 --p-none flx --flxColumn --flx-start-stretch --gap-30"
+							>
+								<div class="flx --flxColumn --flx-start-stretch">
+									<h4 class="--txtColor">Ingresa tus datos:</h4>
+									<div class="flx --flxColumn --flx-start-stretch --gap-5">
+										<p class="--txtSize-sm">Correo electronico*</p>
+										<div class="iTxt">
+											<input
+												name="email"
+												type="email"
+												placeholder="Tu cuenta de correo..."
+												title="Correo electronico"
+												autocomplete="email"
+												required
+											/>
+											<i aria-hidden="true" class="fa-at fas icon"></i>
+										</div>
+									</div>
+									<div class="flx --flxColumn --flx-start-stretch --gap-5">
+										<p class="--txtSize-sm">Contraseña*</p>
+										<div class="iTxt">
+											<input
+												name="password"
+												type="password"
+												placeholder="Tu contraseña..."
+												title="Contraseña"
+												autocomplete="current-password"
+												required
+											/>
+											<i aria-hidden="true" class="fa-lock fas icon"></i>
+										</div>
+									</div>
+									<div
+										class="flx --flxRow-wrap --flx-center --flx-start-center:md --gap"
+									>
+										<button class="bttn" type="submit">Iniciar sesion</button>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="txt --pY --txtColor-dark7 --txtSize-sm">
+							<p>
+								Develop by
+								<b>Daniel Castillo</b>
+								&
+								<b>Victor Saa.</b>
+							</p>
+						</div>
+					</div>
+				</section>
+			</div>
+		</main>
+	</body>
 </html>
