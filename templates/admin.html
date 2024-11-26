@@ -200,7 +200,7 @@
 				const data = await response.json();
 
 				if (data.length === 0) {
-					tableBody.innerHTML = "<tr><td colspan='5'>No unclassified requests</td></tr>";
+					tableBody.innerHTML = "<tr><td colspan='6'>No unclassified requests</td></tr>";
 				} else {
 					tableBody.innerHTML = ""; // Clear any existing rows
 					displayUnclassifiedRequests(data, tableBody);
