@@ -1,67 +1,66 @@
-import json
-from datetime import datetime
 from flask import request
-from ia_tasks import analyze_request
+from utils.storage import RequestsStorageManager, ClassificationsStorageManager
+from validator import analyze_request
 
-REQUEST_LOG = "logs/requests_log.json"
-CLASSIFICATIONS_LOG = "logs/classifications.json"
-CONFIDENCE_THRESHOLD = 0.6  # Umbral de confianza
 
-def load_logs(filepath):
-    try:
-        with open(filepath, "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return []
+CONFIDENCE_THRESHOLD = 0.6
 
-def save_log(filepath, data):
-    logs = load_logs(filepath)
-    logs.append(data)
-    with open(filepath, "w") as f:
-        json.dump(logs, f)
+# GET LOGS
+request_log_manager = RequestsStorageManager()
+classification_manager = ClassificationsStorageManager()
 
-def log_request():
-    return {
-        "timestamp": datetime.utcnow().isoformat(),
-        "path": request.path,
-        "method": request.method,
-        "headers": dict(request.headers),
-        "ip": request.remote_addr,
-        "body": request.get_json(silent=True)
-    }
+class Middleware:
+    def __init__(self, app):
+        self.app = app
+        self.app.before_request(self.before_request)
 
-def classify_request(req_data, classifications):
-    """Determina si una solicitud coincide con una clasificación previa."""
-    for classification in classifications:
-        if classification["request"] == req_data:
-            return classification["is_safe"]
-    return None
+    def before_request(self):
+        req_data = self.log_request() # Always log current request
+        log_data = request_log_manager.get_all
 
-def middleware(app):
-    @app.before_request
-    def before_request():
-        req_data = log_request()
-        log_data = load_logs(REQUEST_LOG)
-        classifications = load_logs(CLASSIFICATIONS_LOG)
-
-        # Verificar si la solicitud ya está clasificada
-        manual_classification = classify_request(req_data, classifications)
+        # Check if is classified already
+        manual_classification = self.classify_request(req_data)
 
         if manual_classification is not None:
-            if manual_classification:
-                save_log(REQUEST_LOG, req_data)  # Registrar como segura
-                return
-            else:
-                return {"error": "Request blocked (manually classified as unsafe)"}, 403
+            if manual_classification: return # Already classified as safe
+            else: return {"error": "Request blocked (manually classified as unsafe)"}, 403
 
-        # Solicitudes no clasificadas: usar IA
+        # Unclassified, use IA
         analysis = analyze_request(req_data, log_data)
-        save_log(REQUEST_LOG, req_data)
 
         if analysis["confidence"] < CONFIDENCE_THRESHOLD:
+            # Require manual clasificacion
+            classification_manager.save({
+                "request": req_data,
+                "is_safe": None
+            })
+
             return {
                 "error": "Request blocked",
                 "confidence": analysis["confidence"],
                 "required_threshold": CONFIDENCE_THRESHOLD,
                 "frequency": analysis["frequency"]
             }, 403
+
+    def log_request(self):
+        # Log current request
+        request_log = {
+            "timestamp": request.headers.get("Date", "Unknown"),
+            "path": request.path,
+            "method": request.method,
+            "headers": dict(request.headers),
+            "ip": request.remote_addr,
+            "body": request.get_json(silent=True) or request.form.to_dict()
+        }
+        
+        return self.log_manager.save(request_log)
+    
+    def classify_request(req_data):
+        classifications = classification_manager.get_all
+
+        for classification in classifications:
+            if classification["request"] == req_data:
+                return classification["is_safe"]
+        return None
+
+    
