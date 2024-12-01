@@ -61,11 +61,11 @@
 							<table class="tbl --txtSize-sm --width-100">
 								<thead>
 									<tr>
-										<th>Timestamp</th>
-										<th>Path</th>
+										<th colspan="2">Timestamp</th>
+										<th colspan="2">Path</th>
 										<th>Method</th>
 										<th>IP</th>
-										<th>Body</th>
+										<th colspan="3">Body</th>
 										<th>Action</th>
 									</tr>
 								</thead>
@@ -124,9 +124,11 @@
 				const actionCell = document.createElement("td");
 
 				// timestamp
+				timestampCell.setAttribute("colspan", 2);
 				timestampCell.textContent = request.timestamp;
 				row.appendChild(timestampCell);
 				// path
+				pathCell.setAttribute("colspan", 2);
 				pathCell.textContent = request.path;
 				row.appendChild(pathCell);
 				// method
@@ -136,6 +138,7 @@
 				ipCell.textContent = request.ip;
 				row.appendChild(ipCell);
 				// body
+				bodyCell.setAttribute("colspan", 3);
 				bodyCell.textContent = JSON.stringify(request.body); // Display body as string
 				row.appendChild(bodyCell);
 
